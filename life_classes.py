@@ -69,9 +69,9 @@ class Cell():
     def action(self,population,population_map,medium,life_cell,dead_list, time):
         self.age += 1
         if self.idx not in dead_list:
-            if self.organic <= dead_level or self.age > 50:
+            if self.organic <= dead_level or self.age > dead_age:
                 life_cell[self.idx] = False
-                population_map[self.y,self.x] = -1
+                population_map[self.y,self.x] = empty
                 dead_list.add(self.idx)
             elif self.organic < life_level:
 
@@ -111,7 +111,7 @@ class Cell():
                     neighbors = population_map[max(0,self.y - 1):min(screen_size[0] - 1, self.y + 2),
                                        max(0,self.x - 1):min(screen_size[0] - 1, self.x + 2)]
 
-                    kill_list = list(neighbors[(neighbors != -1) & (neighbors != self.idx)])
+                    kill_list = list(neighbors[(neighbors != empty) & (neighbors != self.idx)])
                     if len(kill_list) != 0:
                         random.shuffle(kill_list)
 
@@ -121,7 +121,7 @@ class Cell():
                                 self.organic += organic_eat * population[kill_id].organic
 
                                 life_cell[kill_id] = False
-                                population_map[self.y,self.x] = -1
+                                population_map[self.y,self.x] = empty
                                 self.y = population[kill_id].y
                                 self.x = population[kill_id].x
 
@@ -140,9 +140,9 @@ class Cell():
 
                 neighbors = population_map[max(0,self.y - 1):min(screen_size[0] - 1, self.y + 2),
                                            max(0,self.x - 1):min(screen_size[0] - 1, self.x + 2)]
-                if len(neighbors[neighbors != -1 ]) < 9:
+                if len(neighbors[neighbors != empty ]) < 9:
                     new_cell = Cell(genome = self.genome, time = time)
-                    new_cell.mutation()
+                    new_cell.mutation(p_type_mutation = p_mutation)
                     new_cell.organic = self.organic/2
                     new_cell.idx = population.last_valid_index() + 1
                     new_cell.mother = self.idx
@@ -150,7 +150,7 @@ class Cell():
                     coord = list(itertools.product(range(self.y - 1,self.y + 2),range(self.x - 1,self.x + 2)))
                     random.shuffle(coord)
                     for i,j in coord:
-                        if (population_map[i,j] == -1) and ((i,j) != (self.y,self.x)):
+                        if (population_map[i,j] == empty) and ((i,j) != (self.y,self.x)):
                             population[population.last_valid_index() + 1] = new_cell
                             life_cell[population.last_valid_index()] = True
                             population_map[i,j] = population.last_valid_index()
@@ -162,13 +162,11 @@ class Cell():
 class Population():
 
     def __init__(self):
-#         move_gene = ['Up','Down','Left','Right']
-#         eat_gene = ['Eat','Foto', 'Chemo']    
+
         self.time = 0
         self.len_genome = len_genome
-        self.start_organic = start_organic
         population = np.array([])
-        population_map = np.full(screen_size,-1)
+        population_map = np.full(screen_size,empty)
         life_cell = []
         for idx,(x,y) in enumerate(random.sample(list(itertools.product(range(screen_size[0]),range(screen_size[1]))),k = len_population)):
             cell = Cell(time = self.time)
