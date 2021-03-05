@@ -47,6 +47,8 @@ try:
 finally:    
     cv2.destroyAllWindows()
 
+    data_population = data_population.append(a.population[a.life_cell == True])
+
     print('Create csv file....')
     data_population = data_population.unique()
 
