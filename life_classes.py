@@ -45,12 +45,12 @@ class Cell():
         type_mutation = np.random.choice(['Not_Mutation','SNP','Insertion','Deletion'], p = p_type_mutation)
         if type_mutation == 'Not_Mutation':
             pass
-        if type_mutation == 'SNP':
+        elif type_mutation == 'SNP':
             self.genome[random.randint(0,len(self.genome))-1] = np.random.choice(self.genes_list)
-        if type_mutation == 'Insertion':
+        elif type_mutation == 'Insertion':
             insertion = [random.randint(0,len(self.genome)-1) for _ in range(2)]
             self.genome = np.append(self.genome,self.genome[min(insertion):max(insertion)])
-        if type_mutation == 'Deletion':
+        elif type_mutation == 'Deletion':
             deletion = [random.randint(0,len(self.genome)-1) for _ in range(2)]
             self.genome = np.delete(self.genome,np.arange(min(deletion) , max(deletion)))
         
@@ -136,7 +136,7 @@ class Cell():
                 elif gene == 'Chemo':
                     self.organic += medium[self.y,self.x,2]/100 * organic_salt 
 
-            elif (self.x != 0 and self.x != screen_size[1] - 1)  and (self.y != 0 and self.y != screen_size[0] - 1) :
+            elif self.organic >= life_level:
 
                 neighbors = population_map[max(0,self.y - 1):min(screen_size[0] - 1, self.y + 2),
                                            max(0,self.x - 1):min(screen_size[0] - 1, self.x + 2)]
@@ -147,7 +147,8 @@ class Cell():
                     new_cell.idx = population.last_valid_index() + 1
                     new_cell.mother = self.idx
                     self.organic = self.organic/2
-                    coord = list(itertools.product(range(self.y - 1,self.y + 2),range(self.x - 1,self.x + 2)))
+                    coord = list(itertools.product(range(max(0,self.y - 1),min(screen_size[0] - 1, self.y + 2)),
+                                                   range(max(0,self.x - 1),min(screen_size[0] - 1, self.x + 2))))
                     random.shuffle(coord)
                     for i,j in coord:
                         if (population_map[i,j] == empty) and ((i,j) != (self.y,self.x)):
