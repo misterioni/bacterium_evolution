@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-import tqdm
 from collections import defaultdict
 import itertools
 import random
