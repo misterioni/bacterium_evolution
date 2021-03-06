@@ -4,6 +4,7 @@ import tqdm
 from collections import defaultdict
 import itertools
 import random
+import tqdm
 import pandas as pd
 from parametrs import *
 from life_classes import *
@@ -58,7 +59,7 @@ finally:
         'mother':[],
         'age':[]
     })
-    for i in data_population:
+    for i in tqdm.tqdm(data_population):
         life_data.loc[i.idx,:] = [' '.join(i.genome),i.time_create,i.mother,i.age]
         
         
