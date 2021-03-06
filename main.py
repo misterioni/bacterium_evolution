@@ -43,6 +43,8 @@ try:
             print('{}\nPopulation size: {},\nEpoch: {}\n{}'.format(30*'-',len(a.population[a.life_cell]),a.time,30*'-'))
             a.population = a.population[a.life_cell]
             a.life_cell = a.life_cell[a.life_cell]
+except:
+    print('\nScript stoped')
 
 finally:    
     cv2.destroyAllWindows()
@@ -50,21 +52,21 @@ finally:
     data_population = data_population.append(a.population[a.life_cell == True])
 
     print('\nCreate csv file....')
-    data_population = data_population.unique()
+    
+    data_population = pd.Series(data_population.unique())
+    
+    life_data = pd.DataFrame()
 
-    life_data = pd.DataFrame({
-        'Genome':[],
-        'time_create':[],
-        'mother':[],
-        'age':[]
-    })
-    for i in tqdm.tqdm(data_population):
-        life_data.loc[i.idx,:] = [' '.join(i.genome),i.time_create,i.mother,i.age]
+    life_data.loc[:,'Genome'] = data_population.apply(lambda x: ' '.join(x.genome))
+    life_data.loc[:,'time_create'] = data_population.apply(lambda x: x.time_create)
+    life_data.loc[:,'mother'] = data_population.apply(lambda x: x.mother)
+    life_data.loc[:,'age'] = data_population.apply(lambda x: x.age)
         
         
     life_data = life_data.sort_index()
     life_data.iloc[:,1:4] = life_data.iloc[:,1:4].astype(int)
     life_data.to_csv('life_data.csv')
+    
     print('Done! Bye!')
 #fourcc = cv2.VideoWriter_fourcc(*'mp4v') 
 #video=cv2.VideoWriter('video1.avi', fourcc, 3,(1000,1000))
